@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: ip-location-api
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: python app/main.py
