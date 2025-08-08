@@ -3,26 +3,23 @@ import requests
 
 app = Flask(__name__)
 
-@app.route('/lookup', methods=['GET'])
-def lookup_ip():
+@app.route('/')
+def home():
+    return "🌍 IP Location API is live!"
+
+@app.route('/location')
+def get_location():
     ip = request.args.get('ip')
     if not ip:
-        return jsonify({"error": "IP address is required"}), 400
+        return jsonify({'error': 'IP address is required'}), 400
 
-    response = requests.get(f"http://ip-api.com/json/{ip}")
-    data = response.json()
+    try:
+        response = requests.get(f'http://ip-api.com/json/{ip}')
+        return jsonify(response.json())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-    if data.get("status") != "success":
-        return jsonify({"error": "Failed to retrieve data"}), 500
-
-    result = {
-        "ip": ip,
-        "country": data.get("country"),
-        "region": data.get("regionName"),
-        "city": data.get("city"),
-        "lat": data.get("lat"),
-        "lon": data.get("lon"),
-        "isp": data.get("isp")
-    }
-
-    return jsonify(result)
+if __name__ == "__main__":
+    import os
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
